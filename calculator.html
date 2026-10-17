@@ -1,0 +1,335 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scientific Calculator</title>
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #101827, #243b55);
+  font-family: Arial, sans-serif;
+  color: white;
+}
+
+.calculator {
+  width: 100%;
+  max-width: 430px;
+  padding: 22px;
+  border-radius: 22px;
+  background: #182233;
+  box-shadow: 0 20px 50px #0006;
+}
+
+h2 {
+  text-align: center;
+  margin: 0 0 18px;
+  color: #65d6ff;
+}
+
+.display {
+  background: #0b1220;
+  padding: 18px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+#history {
+  height: 22px;
+  color: #94a3b8;
+  text-align: right;
+  font-size: 14px;
+}
+
+#screen {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: white;
+  text-align: right;
+  font-size: 30px;
+}
+
+.mode {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+select {
+  padding: 7px;
+  background: #26364b;
+  color: white;
+  border: 1px solid #475569;
+  border-radius: 7px;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 9px;
+}
+
+button {
+  min-width: 0;
+  padding: 14px 2px;
+  border: none;
+  border-radius: 10px;
+  background: #29384c;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+button:hover { background: #405570; }
+button:active { transform: scale(.95); }
+
+.fn { color: #65d6ff; }
+.operator { background: #354b65; }
+.clear { background: #b93848; }
+.equal {
+  background: #087f8c;
+  grid-column: span 2;
+}
+.equal:hover { background: #079bab; }
+
+.footer {
+  margin-top: 16px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+@media (max-width: 380px) {
+  .calculator { padding: 13px; }
+  .buttons { gap: 6px; }
+  button { padding: 13px 1px; font-size: 14px; }
+}
+</style>
+</head>
+<body>
+
+<div class="calculator">
+  <h2>Scientific Calculator</h2>
+
+  <div class="display">
+    <div id="history"></div>
+    <input id="screen" type="text" value="0"
+      aria-label="Calculator display"
+      autocomplete="off" spellcheck="false">
+  </div>
+
+  <div class="mode">
+    <span>Angle mode</span>
+    <select id="angleMode">
+      <option value="DEG">DEG (Degrees)</option>
+      <option value="RAD">RAD (Radians)</option>
+    </select>
+  </div>
+
+  <div class="buttons">
+    <button class="clear" onclick="clearAll()">AC</button>
+    <button onclick="backspace()">DEL</button>
+    <button class="fn" onclick="append('(')">(</button>
+    <button class="fn" onclick="append(')')">)</button>
+    <button class="operator" onclick="append('/')">÷</button>
+
+    <button class="fn" onclick="append('sin(')">sin</button>
+    <button class="fn" onclick="append('cos(')">cos</button>
+    <button class="fn" onclick="append('tan(')">tan</button>
+    <button class="fn" onclick="append('sqrt(')">√</button>
+    <button class="operator" onclick="append('*')">×</button>
+
+    <button class="fn" onclick="append('log(')">log</button>
+    <button class="fn" onclick="append('ln(')">ln</button>
+    <button class="fn" onclick="append('^2')">x²</button>
+    <button class="fn" onclick="append('^')">xʸ</button>
+    <button class="operator" onclick="append('-')">−</button>
+
+    <button class="fn" onclick="append('asin(')">sin⁻¹</button>
+    <button class="fn" onclick="append('acos(')">cos⁻¹</button>
+    <button class="fn" onclick="append('atan(')">tan⁻¹</button>
+    <button class="fn" onclick="append('!')">n!</button>
+    <button class="operator" onclick="append('+')">+</button>
+
+    <button onclick="append('7')">7</button>
+    <button onclick="append('8')">8</button>
+    <button onclick="append('9')">9</button>
+    <button class="fn" onclick="append('π')">π</button>
+    <button class="fn" onclick="append('e')">e</button>
+
+    <button onclick="append('4')">4</button>
+    <button onclick="append('5')">5</button>
+    <button onclick="append('6')">6</button>
+    <button class="fn" onclick="append('^(-1)')">1/x</button>
+    <button class="fn" onclick="append('abs(')">|x|</button>
+
+    <button onclick="append('1')">1</button>
+    <button onclick="append('2')">2</button>
+    <button onclick="append('3')">3</button>
+    <button class="fn" onclick="append('Ans')">Ans</button>
+    <button class="fn" onclick="append('10^(')">10ˣ</button>
+
+    <button onclick="append('0')">0</button>
+    <button onclick="append('.')">.</button>
+    <button onclick="append('00')">00</button>
+    <button class="fn" onclick="append('exp(')">exp</button>
+    <button class="equal" onclick="calculate()">=</button>
+  </div>
+
+  <div class="footer">Scientific Calculator • Keyboard supported</div>
+</div>
+
+<script>
+const screen = document.getElementById("screen");
+const historyDisplay = document.getElementById("history");
+const angleMode = document.getElementById("angleMode");
+
+let answer = 0;
+let justCalculated = false;
+
+function append(value) {
+  if (screen.value === "Error") screen.value = "";
+
+  if (justCalculated) {
+    if (/^[0-9.]$/.test(value) || value === "00") {
+      screen.value = "";
+    }
+    justCalculated = false;
+  }
+
+  if (screen.value === "0" && /^[0-9]$/.test(value)) {
+    screen.value = value;
+  } else {
+    screen.value += value;
+  }
+
+  screen.focus();
+}
+
+function clearAll() {
+  screen.value = "0";
+  historyDisplay.textContent = "";
+  justCalculated = false;
+}
+
+function backspace() {
+  screen.value = screen.value.slice(0, -1) || "0";
+  justCalculated = false;
+}
+
+function factorial(n) {
+  if (!Number.isInteger(n) || n < 0 || n > 170) {
+    throw Error("Factorial requires an integer from 0 to 170");
+  }
+  let result = 1;
+  for (let i = 2; i <= n; i++) result *= i;
+  return result;
+}
+
+function calculate() {
+  const original = screen.value.trim();
+  if (!original || original === "Error") return;
+
+  try {
+    let expr = original;
+
+    // Convert postfix factorials, including parenthesized expressions.
+    for (let i = 0; i < 100; i++) {
+      const previous = expr;
+      expr = expr.replace(
+        /(\d+(?:\.\d+)?|π|e|Ans|\))!/g,
+        "factorial($1)"
+      );
+      if (expr === previous) break;
+    }
+
+    // Handle implicit multiplication, e.g. 2π and 2(3+4).
+    expr = expr
+      .replace(/(\d|\)|π|e|Ans)(?=(π|e|Ans|\())/g, "$1*")
+      .replace(/(π|e|Ans)(?=\d)/g, "$1*")
+      .replace(/π/g, "Math.PI")
+      .replace(/\bAns\b/g, "ANS")
+      .replace(/\be\b/g, "Math.E")
+      .replace(/\^/g, "**");
+
+    // Convert scientific functions to JavaScript Math functions.
+    const isDeg = angleMode.value === "DEG";
+    const funcs = {
+      sin: x => Math.sin(isDeg ? x * Math.PI / 180 : x),
+      cos: x => Math.cos(isDeg ? x * Math.PI / 180 : x),
+      tan: x => Math.tan(isDeg ? x * Math.PI / 180 : x),
+      asin: x => isDeg ? Math.asin(x) * 180 / Math.PI : Math.asin(x),
+      acos: x => isDeg ? Math.acos(x) * 180 / Math.PI : Math.acos(x),
+      atan: x => isDeg ? Math.atan(x) * 180 / Math.PI : Math.atan(x),
+      sqrt: Math.sqrt,
+      log: Math.log10,
+      ln: Math.log,
+      abs: Math.abs,
+      exp: Math.exp,
+      factorial
+    };
+
+    for (const [name, fn] of Object.entries(funcs)) {
+      // Map only function calls, not arbitrary identifiers.
+      expr = expr.replace(
+        new RegExp("\\b" + name + "\\s*\\(", "g"),
+        "F." + name + "("
+      );
+    }
+
+    // Only allow characters and identifiers produced by the transformations.
+    if (!/^[0-9+\-*/().,\sA-Za-z_]+$/.test(expr)) {
+      throw Error("Invalid expression");
+    }
+
+    const result = Function("F", "ANS",
+      '"use strict"; return (' + expr + ');'
+    )(funcs, answer);
+
+    if (typeof result !== "number" || !Number.isFinite(result)) {
+      throw Error("Math error");
+    }
+
+    answer = result;
+    historyDisplay.textContent = original + " =";
+    screen.value = Number(result.toPrecision(12)).toString();
+    justCalculated = true;
+
+  } catch (error) {
+    historyDisplay.textContent = error.message || "Invalid expression";
+    screen.value = "Error";
+    justCalculated = true;
+  }
+}
+
+screen.addEventListener("keydown", event => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    calculate();
+  } else if (event.key === "Escape") {
+    clearAll();
+  } else if (
+    !/^[0-9+\-*/().!^]$/.test(event.key) &&
+    !["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"].includes(event.key)
+  ) {
+    event.preventDefault();
+  }
+});
+</script>
+</body>
+</html>

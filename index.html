@@ -1,0 +1,371 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MY PROJECTS</title>
+<meta name="description" content="Welcome to my creative digital world. Explore my interests, creativity and web development journey.">
+
+<style>
+:root {
+    --bg: #080b18;
+    --panel: #11172b;
+    --cyan: #53f6ff;
+    --purple: #a78bfa;
+    --white: #f5f7ff;
+    --muted: #b0bad2;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: Arial, sans-serif;
+    color: var(--white);
+    background:
+        radial-gradient(ellipse at 15% 10%, #5239a42c, transparent 40%),
+        radial-gradient(ellipse at 90% 65%, #00d9ff17, transparent 35%),
+        var(--bg);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* NAVIGATION */
+header {
+    padding: 22px 7%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #080b18dd;
+    border-bottom: 1px solid #ffffff15;
+    backdrop-filter: blur(14px);
+}
+
+.logo {
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+.logo span { color: var(--cyan); }
+
+nav a {
+    text-decoration: none;
+    color: white;
+    border: 1px solid #53f6ff70;
+    border-radius: 9px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    transition: .25s;
+}
+
+nav a:hover {
+    color: #07101b;
+    background: var(--cyan);
+    box-shadow: 0 0 20px #53f6ff55;
+}
+
+/* HERO */
+.hero {
+    min-height: 570px;
+    padding: 100px 20px 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.badge {
+    padding: 11px 18px;
+    border: 1px solid #53f6ff45;
+    background: #53f6ff0c;
+    border-radius: 40px;
+    color: var(--cyan);
+    font-size: 12px;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+}
+
+.hero h1 {
+    font-size: clamp(42px, 8vw, 78px);
+    line-height: 1.12;
+    letter-spacing: -2px;
+    font-weight: 900;
+}
+
+.gradient {
+    background: linear-gradient(90deg, #53f6ff, #b9a1ff, #ff8cdb);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.hero p {
+    max-width: 650px;
+    margin-top: 25px;
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 1.9;
+}
+
+.hero-button {
+    display: inline-block;
+    margin-top: 32px;
+    padding: 15px 25px;
+    border-radius: 10px;
+    background: linear-gradient(100deg, var(--cyan), #a8a5ff);
+    color: #07101b;
+    text-decoration: none;
+    font-weight: bold;
+    transition: .25s;
+}
+
+.hero-button:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px #53f6ff30;
+}
+
+/* HIGHLIGHTS */
+.highlights {
+    width: min(850px, 90%);
+    margin: 0 auto 85px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid #ffffff17;
+    background: #ffffff05;
+    border-radius: 18px;
+    padding: 27px 10px;
+    text-align: center;
+}
+
+.highlight + .highlight {
+    border-left: 1px solid #ffffff20;
+}
+
+.highlight h2 {
+    font-size: 27px;
+    color: var(--cyan);
+    margin-bottom: 9px;
+}
+
+.highlight p {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* ABOUT */
+.about {
+    width: min(900px, 88%);
+    margin: 0 auto 90px;
+    padding: 45px 35px;
+    border: 1px solid #ffffff18;
+    background: linear-gradient(135deg, #151c34, #101326);
+    border-radius: 22px;
+    text-align: center;
+    scroll-margin-top: 30px;
+}
+
+.section-label {
+    color: var(--cyan);
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 3px;
+    margin-bottom: 15px;
+}
+
+.about h2 {
+    font-size: clamp(28px, 5vw, 40px);
+    margin-bottom: 22px;
+}
+
+.about > p {
+    max-width: 680px;
+    margin: 0 auto;
+    color: var(--muted);
+    line-height: 1.9;
+    font-size: 15px;
+}
+
+.interests {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.interest {
+    padding: 12px 16px;
+    border: 1px solid #53f6ff30;
+    background: #53f6ff09;
+    border-radius: 9px;
+    font-size: 13px;
+    color: #dceeff;
+}
+
+/* FOOTER */
+footer {
+    padding: 35px 20px;
+    text-align: center;
+    background: #060916;
+    border-top: 1px solid #ffffff15;
+}
+
+footer h3 {
+    font-size: 22px;
+    margin-bottom: 12px;
+}
+
+footer h3 span { color: var(--cyan); }
+
+footer p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 2;
+}
+
+footer .copyright {
+    margin-top: 17px;
+    color: #77839f;
+    font-size: 12px;
+}
+
+@media (max-width: 600px) {
+    header {
+        padding: 20px 5%;
+    }
+
+    .logo { font-size: 21px; }
+
+    nav a {
+        padding: 10px 13px;
+        font-size: 12px;
+    }
+
+    .hero {
+        min-height: 490px;
+        padding: 75px 20px;
+    }
+
+    .hero h1 { letter-spacing: -1px; }
+
+    .hero p { font-size: 15px; }
+
+    .highlights {
+        padding: 22px 5px;
+    }
+
+    .highlight h2 { font-size: 21px; }
+
+    .highlight p { font-size: 11px; }
+
+    .about {
+        padding: 35px 20px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { transition: none; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">MY<span> PROJECTS</span></div>
+
+    <!-- Only one navigation link -->
+    <nav>
+        <a href="index.html">⌂ Home</a>
+    </nav>
+</header>
+
+<main>
+
+    <section class="hero">
+        <div class="badge">✦ WELCOME TO THIS WEBSITE ✦</div>
+
+        <h1>
+            Explore My<br>
+            <span class="gradient">Creative World.</span>
+        </h1>
+
+        <p>
+            Welcome to my digital space! This is where creativity,
+            technology and imagination come together.
+            Discover my interests, ideas and journey into the world of web development.
+        </p>
+
+        <a href="home.html" class="hero-button">
+            🏠 Visit Home Page
+        </a>
+    </section>
+
+    <section class="highlights">
+        <div class="highlight">
+            <h2>💡</h2>
+            <p>Creative Ideas</p>
+        </div>
+
+        <div class="highlight">
+            <h2>💻</h2>
+            <p>Web Development</p>
+        </div>
+
+        <div class="highlight">
+            <h2>🚀</h2>
+            <p>Future Goals</p>
+        </div>
+    </section>
+
+    <section class="about" id="about">
+        <div class="section-label">GET TO KNOW THIS WEBSITE</div>
+
+        <h2>About My Digital World ✨</h2>
+
+        <p>
+            Hello and welcome! I enjoy exploring technology,
+            experimenting with HTML, CSS and JavaScript,
+            and turning ideas into interactive web experiences.
+            This website represents my creativity, learning
+            and passion for building things on the internet.
+            I believe every new project is an opportunity
+            to learn something exciting.
+        </p>
+
+        <div class="interests">
+            <div class="interest">💻 Coding</div>
+            <div class="interest">🎮 Gaming</div>
+            <div class="interest">🎨 Creativity</div>
+            <div class="interest">🧠 Learning</div>
+            <div class="interest">🌐 Technology</div>
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    <h3>Thanks for Visiting <span>NEXORA.</span></h3>
+
+    <p>
+        A little creativity can turn an idea into something amazing.<br>
+        Keep learning, keep building, and keep exploring!
+    </p>
+
+    <p class="copyright">
+        © 2026 NEXORA. All rights reserved.
+    </p>
+</footer>
+
+</body>
+</html>

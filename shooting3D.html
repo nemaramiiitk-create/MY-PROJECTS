@@ -1,0 +1,571 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEON STRIKE 3D - Shooting Game</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 12px;
+  background: #050816;
+  color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+h1 {
+  color: #47f5ff;
+  letter-spacing: 3px;
+  text-shadow: 0 0 15px #00d9ff;
+  margin: 12px;
+}
+
+.hud {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 22px;
+  margin: 15px;
+  font-weight: bold;
+}
+
+.hud span { color: #47f5ff; }
+
+#game {
+  display: block;
+  width: min(950px, 100%);
+  height: auto;
+  margin: auto;
+  border: 2px solid #47f5ff;
+  border-radius: 8px;
+  background: #081020;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 15px;
+}
+
+button {
+  padding: 12px 20px;
+  background: #10294a;
+  color: white;
+  border: 1px solid #47f5ff;
+  border-radius: 9px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+button:hover { background: #087eaa; }
+
+#message {
+  color: #b6efff;
+  min-height: 24px;
+}
+
+#overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  background: #020817ee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.panel {
+  width: min(420px, 100%);
+  padding: 28px;
+  border: 1px solid #47f5ff;
+  border-radius: 18px;
+  background: #101b30;
+  box-shadow: 0 0 35px #00d9ff44;
+}
+
+.panel h2 {
+  color: #47f5ff;
+  font-size: 32px;
+}
+
+.panel p { line-height: 1.8; }
+
+@media(max-width: 450px) {
+  .hud { gap: 12px; font-size: 13px; }
+  button { padding: 12px; }
+}
+</style>
+</head>
+
+<body>
+
+<h1>NEON STRIKE 3D</h1>
+
+<div class="hud">
+  <div>SCORE: <span id="score">0</span></div>
+  <div>HEALTH: <span id="health">100</span></div>
+  <div>LEVEL: <span id="level">1</span></div>
+  <div>TARGETS: <span id="remaining">0</span></div>
+</div>
+
+<canvas id="game" width="950" height="570"></canvas>
+
+<div class="controls">
+  <button id="fire">⚡ FIRE</button>
+  <button id="pause">Ⅱ PAUSE</button>
+  <button id="restart">↻ RESTART</button>
+</div>
+
+<div id="message">
+  Aim at a red target and click to shoot!
+</div>
+
+<div id="overlay">
+  <div class="panel">
+    <h2>🚀 NEON STRIKE</h2>
+    <p>
+      🎯 Shoot the bright red targets.<br>
+      🖱️ Move your mouse to aim.<br>
+      🔥 Click or press SPACE to fire.<br>
+      📱 On mobile, tap a target to shoot.
+    </p>
+    <button id="start">START GAME</button>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const W = canvas.width, H = canvas.height;
+
+const $ = id => document.getElementById(id);
+
+let targets = [];
+let particles = [];
+let score = 0;
+let health = 100;
+let level = 1;
+let running = false;
+let paused = false;
+let frame = 0;
+let spawnTimer = 0;
+let lastTime = 0;
+let mouse = { x: W/2, y: H/2 };
+let muzzle = 0;
+let flash = 0;
+
+const stars = Array.from({length:100}, () => ({
+  x: Math.random()*W,
+  y: Math.random()*H,
+  size: Math.random()*2+1,
+  speed: Math.random()*1.5+.3
+}));
+
+function updateHUD() {
+  $("score").textContent = score;
+  $("health").textContent = health;
+  $("level").textContent = level;
+  $("remaining").textContent = targets.length;
+}
+
+function addTarget() {
+  const z = .65 + Math.random()*.35;
+  const r = 23 + z*12;
+
+  targets.push({
+    x: 65 + Math.random()*(W-130),
+    y: 145 + Math.random()*170,
+    r: r,
+    z: z,
+    vx: (Math.random()<.5 ? -1 : 1) *
+        (0.8 + Math.random()*1.5),
+    phase: Math.random()*6,
+    alive: true
+  });
+}
+
+function startGame() {
+  score = 0;
+  health = 100;
+  level = 1;
+  frame = 0;
+  spawnTimer = 0;
+  targets = [];
+  particles = [];
+  muzzle = 0;
+  flash = 0;
+  paused = false;
+  running = true;
+
+  for(let i=0; i<7; i++) addTarget();
+
+  $("overlay").style.display = "none";
+  $("pause").textContent = "Ⅱ PAUSE";
+  $("message").textContent = "Aim at the red targets and shoot!";
+  updateHUD();
+}
+
+function drawBackground() {
+  const sky = ctx.createLinearGradient(0,0,0,H);
+  sky.addColorStop(0,"#07132c");
+  sky.addColorStop(.55,"#173552");
+  sky.addColorStop(1,"#050816");
+
+  ctx.fillStyle = sky;
+  ctx.fillRect(0,0,W,H);
+
+  // Stars
+  stars.forEach(s => {
+    ctx.fillStyle = "#a7eaff";
+    ctx.fillRect(s.x,s.y,s.size,s.size);
+  });
+
+  // Distant buildings
+  for(let i=0;i<19;i++) {
+    const x = i*53;
+    const h = 35+(i*29%90);
+
+    ctx.fillStyle = "#10243b";
+    ctx.fillRect(x,260-h,43,h);
+
+    ctx.fillStyle = "#1b5877";
+    for(let j=0;j<3;j++) {
+      ctx.fillRect(x+8+j*12,270-h,4,7);
+    }
+  }
+
+  // Perspective floor
+  ctx.fillStyle = "#101e32";
+  ctx.beginPath();
+  ctx.moveTo(0,260);
+  ctx.lineTo(W,260);
+  ctx.lineTo(W,H);
+  ctx.lineTo(0,H);
+  ctx.fill();
+
+  ctx.strokeStyle = "#16496a";
+  ctx.lineWidth = 1;
+
+  for(let i=-12;i<=12;i++) {
+    ctx.beginPath();
+    ctx.moveTo(W/2+i*8,260);
+    ctx.lineTo(W/2+i*65,H);
+    ctx.stroke();
+  }
+
+  for(let i=0;i<12;i++) {
+    const t=i/12;
+    const y=260+t*t*310;
+    ctx.beginPath();
+    ctx.moveTo(0,y);
+    ctx.lineTo(W,y);
+    ctx.stroke();
+  }
+}
+
+function drawTarget(t) {
+  ctx.save();
+  ctx.translate(t.x,t.y);
+
+  // Target shadow
+  ctx.fillStyle = "#030712";
+  ctx.beginPath();
+  ctx.ellipse(5,t.r*1.9,t.r*1.3,7,0,0,Math.PI*2);
+  ctx.fill();
+
+  // Bright outer glow
+  ctx.shadowBlur = 30;
+  ctx.shadowColor = "#ff003c";
+  ctx.fillStyle = "#ff003c";
+
+  ctx.beginPath();
+  ctx.arc(0,0,t.r,0,Math.PI*2);
+  ctx.fill();
+
+  // Rings
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.arc(0,0,t.r*.68,0,Math.PI*2);
+  ctx.stroke();
+
+  ctx.fillStyle = "#ffffff";
+  ctx.beginPath();
+  ctx.arc(0,0,t.r*.23,0,Math.PI*2);
+  ctx.fill();
+
+  // Target body
+  ctx.fillStyle = "#b71d43";
+  ctx.fillRect(-t.r*.65,t.r*.9,t.r*1.3,t.r*1.4);
+
+  ctx.strokeStyle = "#ff5c80";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(-t.r*.65,t.r*.9,t.r*1.3,t.r*1.4);
+
+  // Label
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 13px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("TARGET",0,-t.r-12);
+
+  ctx.restore();
+}
+
+function drawGun() {
+  const x = W/2;
+  const y = H+20+muzzle;
+
+  ctx.save();
+  ctx.translate(x,y);
+
+  // Gun body
+  ctx.fillStyle = "#18283b";
+  ctx.beginPath();
+  ctx.moveTo(-110,0);
+  ctx.lineTo(-65,-67);
+  ctx.lineTo(-25,-88);
+  ctx.lineTo(25,-88);
+  ctx.lineTo(65,-67);
+  ctx.lineTo(110,0);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.strokeStyle = "#47f5ff";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  ctx.fillStyle = "#314c67";
+  ctx.fillRect(-22,-115,44,45);
+
+  ctx.fillStyle = "#47f5ff";
+  ctx.fillRect(-5,-137,10,28);
+
+  if(flash>0) {
+    ctx.fillStyle = "#fff4a8";
+    ctx.shadowBlur = 30;
+    ctx.shadowColor = "#ffb52e";
+    ctx.beginPath();
+    ctx.moveTo(0,-145);
+    ctx.lineTo(-20,-175);
+    ctx.lineTo(0,-166);
+    ctx.lineTo(20,-175);
+    ctx.closePath();
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  ctx.restore();
+}
+
+function drawCrosshair() {
+  ctx.save();
+  ctx.translate(mouse.x,mouse.y);
+
+  ctx.strokeStyle = "#66ffff";
+  ctx.lineWidth = 3;
+  ctx.shadowBlur = 12;
+  ctx.shadowColor = "#00eeff";
+
+  ctx.beginPath();
+  ctx.arc(0,0,14,0,Math.PI*2);
+  ctx.moveTo(-28,0);
+  ctx.lineTo(-7,0);
+  ctx.moveTo(7,0);
+  ctx.lineTo(28,0);
+  ctx.moveTo(0,-28);
+  ctx.lineTo(0,-7);
+  ctx.moveTo(0,7);
+  ctx.lineTo(0,28);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+function burst(x,y) {
+  for(let i=0;i<18;i++) {
+    const a=Math.random()*Math.PI*2;
+    const speed=1+Math.random()*5;
+
+    particles.push({
+      x,y,
+      vx:Math.cos(a)*speed,
+      vy:Math.sin(a)*speed,
+      life:28,
+      color:Math.random()<.5 ? "#ff315d" : "#fff4a8"
+    });
+  }
+}
+
+function shoot(x=mouse.x,y=mouse.y) {
+  if(!running || paused) return;
+
+  muzzle=10;
+  flash=5;
+
+  let hit=false;
+
+  for(let i=targets.length-1;i>=0;i--) {
+    const t=targets[i];
+    const dx=x-t.x;
+    const dy=y-t.y;
+
+    if(Math.sqrt(dx*dx+dy*dy)<t.r+7) {
+      burst(t.x,t.y);
+      targets.splice(i,1);
+      score+=10;
+      level=1+Math.floor(score/150);
+      hit=true;
+      break;
+    }
+  }
+
+  if(hit) {
+    $("message").textContent="🎯 DIRECT HIT! +10 POINTS";
+    addTarget();
+  } else {
+    $("message").textContent="Missed! Aim at the red circle.";
+  }
+
+  updateHUD();
+}
+
+function finishGame() {
+  running=false;
+  $("overlay").style.display="flex";
+  $("overlay").innerHTML=`
+    <div class="panel">
+      <h2>GAME OVER</h2>
+      <p>Final Score: ${score}<br>
+      Level Reached: ${level}</p>
+      <button onclick="startGame()">PLAY AGAIN</button>
+    </div>`;
+}
+
+function togglePause() {
+  if(!running) return;
+
+  paused=!paused;
+  $("pause").textContent=paused ? "▶ RESUME" : "Ⅱ PAUSE";
+  $("message").textContent=paused ? "Game paused" : "Keep shooting!";
+}
+
+function update(dt) {
+  if(!running || paused) return;
+
+  frame++;
+  spawnTimer+=dt;
+
+  stars.forEach(s=>{
+    s.y+=s.speed;
+    if(s.y>H) {
+      s.y=0;
+      s.x=Math.random()*W;
+    }
+  });
+
+  targets.forEach(t=>{
+    t.x+=t.vx*dt*60;
+    t.y+=Math.sin(frame*.035+t.phase)*.25;
+
+    if(t.x<t.r || t.x>W-t.r) t.vx*=-1;
+  });
+
+  if(spawnTimer>2 && targets.length<10) {
+    addTarget();
+    spawnTimer=0;
+  }
+
+  particles.forEach(p=>{
+    p.x+=p.vx;
+    p.y+=p.vy;
+    p.life--;
+  });
+
+  particles=particles.filter(p=>p.life>0);
+  muzzle=Math.max(0,muzzle-dt*60);
+  flash=Math.max(0,flash-dt*60);
+}
+
+function draw() {
+  drawBackground();
+  targets.forEach(drawTarget);
+
+  particles.forEach(p=>{
+    ctx.globalAlpha=p.life/28;
+    ctx.fillStyle=p.color;
+    ctx.fillRect(p.x,p.y,5,5);
+  });
+
+  ctx.globalAlpha=1;
+  drawGun();
+  drawCrosshair();
+
+  if(paused && running) {
+    ctx.fillStyle="#020817bb";
+    ctx.fillRect(0,0,W,H);
+    ctx.fillStyle="#47f5ff";
+    ctx.textAlign="center";
+    ctx.font="bold 48px Arial";
+    ctx.fillText("PAUSED",W/2,H/2);
+  }
+}
+
+let previous=0;
+
+function loop(now) {
+  const dt=Math.min((now-previous)/1000||0,.05);
+  previous=now;
+  update(dt);
+  draw();
+  requestAnimationFrame(loop);
+}
+
+function aimAndShoot(e) {
+  const rect=canvas.getBoundingClientRect();
+  mouse.x=(e.clientX-rect.left)*W/rect.width;
+  mouse.y=(e.clientY-rect.top)*H/rect.height;
+  shoot(mouse.x,mouse.y);
+}
+
+canvas.addEventListener("pointermove",e=>{
+  const rect=canvas.getBoundingClientRect();
+  mouse.x=(e.clientX-rect.left)*W/rect.width;
+  mouse.y=(e.clientY-rect.top)*H/rect.height;
+});
+
+canvas.addEventListener("pointerdown",e=>{
+  e.preventDefault();
+  aimAndShoot(e);
+});
+
+$("fire").addEventListener("click",()=>shoot());
+$("start").addEventListener("click",startGame);
+$("restart").addEventListener("click",startGame);
+$("pause").addEventListener("click",togglePause);
+
+document.addEventListener("keydown",e=>{
+  if(e.code==="Space") {
+    e.preventDefault();
+    shoot();
+  }
+  if(e.key.toLowerCase()==="p") togglePause();
+});
+
+updateHUD();
+draw();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

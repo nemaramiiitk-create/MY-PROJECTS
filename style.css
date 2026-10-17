@@ -1,0 +1,23 @@
+html{
+    min-height:100%;
+}
+body{
+    margin:0;
+    min-height:100vh;
+    color:rgb(37, 29, 29);
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+
+h1{
+    text-align: center;
+    color:white;
+
+}
+h2{
+    color:brown;
+}
+a{
+    text-decoration: none;
+    color:white;
+}

@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Number Guessing Game</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    padding: 20px;
+}
+
+.game {
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 15px 40px #0003;
+}
+
+h1 {
+    color: #5b4bdb;
+    margin-top: 0;
+}
+
+.subtitle {
+    color: #666;
+    line-height: 1.5;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    font-size: 20px;
+    text-align: center;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    margin: 15px 0;
+    outline: none;
+}
+
+input:focus {
+    border-color: #667eea;
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    background: #667eea;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+button:hover {
+    background: #5145cd;
+}
+
+#message {
+    min-height: 28px;
+    font-weight: bold;
+    margin: 18px 0;
+    color: #333;
+}
+
+.stats {
+    background: #f3f2ff;
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 15px;
+    color: #5145cd;
+}
+
+#history {
+    color: #666;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 400px) {
+    .game {
+        padding: 22px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="game">
+    <h1>🎯 Number Guessing Game</h1>
+
+    <p class="subtitle">
+        I have selected a number between 1 and 100.
+        Can you guess it?
+    </p>
+
+    <form id="guessForm">
+        <input
+            type="number"
+            id="guessInput"
+            min="1"
+            max="100"
+            placeholder="Enter your guess"
+            required
+            autofocus
+        >
+        <button type="submit" id="guessButton">Guess!</button>
+    </form>
+
+    <div id="message" aria-live="polite">
+        Good luck! Make your first guess.
+    </div>
+
+    <div class="stats">
+        <p>Attempts: <strong id="attempts">0</strong></p>
+        <p>Remaining guesses: <strong id="remaining">10</strong></p>
+        <p id="history">Your guesses: None</p>
+    </div>
+
+    <button onclick="restartGame()">🔄 New Game</button>
+</div>
+
+<script>
+let secretNumber;
+let attempts;
+let guesses;
+let gameOver;
+
+const maxGuesses = 10;
+
+const form = document.getElementById("guessForm");
+const input = document.getElementById("guessInput");
+const message = document.getElementById("message");
+const attemptsDisplay = document.getElementById("attempts");
+const remainingDisplay = document.getElementById("remaining");
+const historyDisplay = document.getElementById("history");
+const guessButton = document.getElementById("guessButton");
+
+function restartGame() {
+    secretNumber = Math.floor(Math.random() * 100) + 1;
+    attempts = 0;
+    guesses = [];
+    gameOver = false;
+
+    input.value = "";
+    input.disabled = false;
+    guessButton.disabled = false;
+
+    message.textContent = "Good luck! Make your first guess.";
+    attemptsDisplay.textContent = "0";
+    remainingDisplay.textContent = maxGuesses;
+    historyDisplay.textContent = "Your guesses: None";
+
+    input.focus();
+}
+
+form.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    if (gameOver) return;
+
+    const guess = Number(input.value);
+
+    if (
+        input.value.trim() === "" ||
+        !Number.isInteger(guess) ||
+        guess < 1 ||
+        guess > 100
+    ) {
+        message.textContent = "⚠️ Enter a whole number from 1 to 100!";
+        return;
+    }
+
+    if (guesses.includes(guess)) {
+        message.textContent = "You already tried that number! Try another.";
+        input.select();
+        return;
+    }
+
+    guesses.push(guess);
+    attempts++;
+
+    attemptsDisplay.textContent = attempts;
+    remainingDisplay.textContent = maxGuesses - attempts;
+    historyDisplay.textContent = "Your guesses: " + guesses.join(", ");
+
+    if (guess === secretNumber) {
+        message.textContent =
+            "🎉 Correct! You won in " + attempts +
+            (attempts === 1 ? " attempt!" : " attempts!");
+        endGame();
+    } else if (attempts >= maxGuesses) {
+        message.textContent =
+            "😢 Game over! The number was " + secretNumber + ".";
+        endGame();
+    } else if (guess < secretNumber) {
+        message.textContent = "📈 Too low! Try a bigger number.";
+    } else {
+        message.textContent = "📉 Too high! Try a smaller number.";
+    }
+
+    input.value = "";
+    if (!gameOver) input.focus();
+});
+
+function endGame() {
+    gameOver = true;
+    input.disabled = true;
+    guessButton.disabled = true;
+}
+
+restartGame();
+</script>
+
+</body>
+</html>

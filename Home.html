@@ -1,0 +1,265 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY PROJECS - Home</title>
+    <meta name="description" content="Explore fun games, useful tools and exciting projects on my website.">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+            color: white;
+            min-height: 100vh;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: rgba(40, 30, 100, 0.18);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav h2 {
+            margin: 0;
+            font-size: 25px;
+        }
+
+        nav a {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            color: #ffe66d;
+        }
+
+        .hero {
+            min-height: 65vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 55px 20px;
+        }
+
+        .hero h1 {
+            font-size: clamp(32px, 6vw, 58px);
+            margin-bottom: 10px;
+            text-shadow: 0 5px 20px rgba(30, 20, 80, 0.2);
+        }
+
+        .hero p {
+            font-size: 18px;
+            line-height: 1.8;
+            max-width: 650px;
+            color: #f5f2ff;
+        }
+
+        .btn {
+            display: inline-block;
+            margin: 12px 6px;
+            padding: 13px 23px;
+            background: white;
+            color: #5b4bdb;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #29204d;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(30, 15, 70, 0.2);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 32px;
+            margin: 10px 15px 25px;
+        }
+
+        .features {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 22px;
+            padding: 25px 20px 65px;
+            max-width: 1250px;
+            margin: auto;
+            scroll-margin-top: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(8px);
+            padding: 25px;
+            border-radius: 18px;
+            text-align: center;
+            width: 260px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s, background 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-7px);
+            background: rgba(255, 255, 255, 0.22);
+        }
+
+        .card h2 {
+            font-size: 22px;
+            margin: 12px 0;
+        }
+
+        .card p {
+            color: #f4f0ff;
+            line-height: 1.7;
+            min-height: 55px;
+        }
+
+        .card .btn {
+            margin-top: auto;
+        }
+
+        footer {
+            text-align: center;
+            padding: 22px 15px;
+            background: rgba(0, 0, 0, 0.251);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            color: green;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 480px) {
+            nav {
+                justify-content: center;
+                padding: 18px;
+            }
+
+            nav h2 {
+                width: 100%;
+                text-align: center;
+            }
+
+            nav a {
+                margin: 0 9px;
+            }
+
+            .hero {
+                min-height: 55vh;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .section-title {
+                font-size: 27px;
+            }
+
+            .card {
+                width: min(100%, 340px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <h2>My Projects</h2>
+        <div>
+            <a href="index.html">Home</a>
+            <a href="#features">Features</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>✨ Welcome to My Website! ✨</h1>
+
+        <p>
+            Explore fun games, useful tools, and exciting projects.
+            Discover something new, challenge yourself, and enjoy
+            your experience in my digital world!
+        </p>
+
+        <div>
+            <a href="#features" class="btn">🚀 Explore Projects</a>
+        </div>
+    </section>
+
+    <h2 class="section-title" id="features">🌟 My Projects</h2>
+
+    <section class="features">
+
+        <div class="card">
+            <div style="font-size:45px">🎯</div>
+            <h2>Number Game</h2>
+            <p>Test your skills by guessing the secret number!</p>
+            <a href="numberguess.html" target="_blank" rel="noopener" class="btn">Play Now ↗</a>
+        </div>
+
+        <div class="card">
+            <div style="font-size:45px">🧮</div>
+            <h2>Scientific Calculator</h2>
+            <p>Calculate numbers using powerful scientific functions.</p>
+            <a href="calculator.html" target="_blank" rel="noopener" class="btn">Calculate ↗</a>
+        </div>
+
+        <div class="card">
+            <div style="font-size:45px">🚀</div>
+            <h2>Neon Shooting</h2>
+            <p>Test your space shooting skills and aim for a high score.</p>
+            <a href="neonshooting.html" target="_blank" rel="noopener" class="btn">Play Now ↗</a>
+        </div>
+
+        <div class="card">
+            <div style="font-size:45px">🏊</div>
+            <h2>Swimming Under Water</h2>
+            <p>Explore the underwater world in your swimming game.</p>
+            <a href="swimming.html" target="_blank" rel="noopener" class="btn">Play Now ↗</a>
+        </div>
+
+        <div class="card">
+            <div style="font-size:45px">🎮</div>
+            <h2>Shoot 3D</h2>
+            <p>Practice your aim and hit the targets in your shooting game.</p>
+            <a href="shooting3D.html" target="_blank" rel="noopener" class="btn">Play Now ↗</a>
+        </div>
+
+    </section>
+
+    <footer>
+        <p>© 2026 My Website | Made with ❤️ using HTML, CSS & JavaScript</p>
+        <p>Keep Learning • Keep Creating • Keep Exploring ✨</p>
+    </footer>
+
+</body>
+</html>
